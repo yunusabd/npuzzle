@@ -14,18 +14,24 @@ function Tile(i, j) {
   this.g = 0;
   this.h = 0;
   this.n = -1;
-  this.endPos = -1;
+  this.endPos = [];
 
-  this.show = function show(col) {
+  this.show = function show(col, pos) {
     fill(col);
     rect(w / shape * (this.j), h / shape * (this.i), w / shape, h / shape);
-    fill(0, 102, 153, 204);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    if (this.endPos !== -1 && mouseX >= w / shape * (this.j) && mouseX <= w / shape * (this.j) + w / shape
+    fill(255, 255, 255, 100);
+    if (pos === 1) {
+      textSize(32);
+      textAlign(CENTER, TOP);
+    }
+    else {
+      textSize(16);
+      textAlign(CENTER, BOTTOM);
+    }
+    if (this.endPos && mouseX >= w / shape * (this.j) && mouseX <= w / shape * (this.j) + w / shape
             && mouseY >= h / shape * (this.i) && mouseY <= h / shape * (this.i) + h / shape) {
-      fill(255, 155, 100);
-      rect(w / shape * (this.endPos % shape - 1), h / shape * Math.ceil(this.endPos / shape - 1), w / shape, h / shape);
+      fill(255, 255, 100, 100);
+      rect(w / shape * (this.endPos[1]), h / shape * (this.endPos[0]), (w / shape), (h / shape));
     }
     text(this.n, w / shape * (this.j + 0.5), h / shape * (this.i + 0.5));
   };
@@ -37,29 +43,14 @@ for (let i = 0; i < shape; i++) {
 }
 
 // get position of zero in the final grid.
-function zeroPos() {
-  if (shape % 2 === 0) {
+function zeroPos(size) {
+  if (size % 2 === 0) {
     // even number
-    return shape * shape / 2 + shape / 2;
+    return [size / 2, size / 2];
   }
   // odd number
-  return (shape * shape + 1) / 2;
+  return [(size - 1) / 2, (size - 1) / 2];
 }
-
-function createGrid() {
-  for (let i = 0; i < shape; i++) {
-    for (let j = 0; j < shape; j++) {
-      grid[i][j] = new Tile(i, j);
-      grid[i][j].n = arr[i][j];
-      if (arr[i][j] === 0) {
-        startNode = grid[i][j];
-        grid[i][j].endPos = zeroPos();
-      }
-    }
-  }
-}
-
-createGrid();
 
 function getSnail() {
   const snail = new Array(shape);
@@ -103,7 +94,36 @@ function recursiveSnail(start, end) {
   recursiveSnail(start + 1, end - 1);
 }
 recursiveSnail(0, shape - 1);
-snail[Math.ceil(zeroPos() / shape) - 1][(zeroPos() % shape) - 1].n = 0;
+snail[zeroPos(shape)[0]][zeroPos(shape)[1]].n = 0;
+
+function findNumber(number) {
+  for (let i = 0; i < snail.length; i++) {
+    for (let j = 0; j < snail[i].length; j++) {
+      if (snail[i][j].n === number) {
+        return [i, j];
+      }
+    }
+  }
+  return null;
+}
+
+function createGrid() {
+  for (let i = 0; i < shape; i++) {
+    for (let j = 0; j < shape; j++) {
+      grid[i][j] = new Tile(i, j);
+      grid[i][j].n = arr[i][j];
+      grid[i][j].endPos = findNumber(grid[i][j].n);
+      if (arr[i][j] === 0) {
+        startNode = grid[i][j];
+        grid[i][j].endPos = findNumber(0);
+      }
+    }
+  }
+}
+
+createGrid();
+
+
 openSet.push(startNode);
 // startNode.f = heuristics(startNode)
 
@@ -116,15 +136,15 @@ function setup() {
 }
 
 function draw() {
-  background(5, 55, 155);
-  for (var i = 0; i < shape; i++) {
-    for (var j = 0; j < shape; j++) {
-      grid[i][j].show(color(255));
+  background(0, 0, 0);
+  for (let i = 0; i < shape; i++) {
+    for (let j = 0; j < shape; j++) {
+      grid[i][j].show(color(0, 0, 255, 100), 1);
     }
   }
   for (var i = 0; i < shape; i++) {
     for (var j = 0; j < shape; j++) {
-      snail[i][j].show(color(255));
+      snail[i][j].show(color(255, 255, 255, 100), 0);
     }
   }
 /*     for (var i = 0; i < openSet.length; i++) {
