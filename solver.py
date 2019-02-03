@@ -17,6 +17,7 @@ def parser():
         data.append(numbers)
 
     arr = np.array(data)
+    print(arr)
     shape = arr.shape
 
     # test if arr is a square matrix
@@ -24,6 +25,7 @@ def parser():
         exit()
 
     b = arr.tolist()
+    print(b)
     j = json.dumps(b, separators=(",", ":"), indent=4)
     return j
 
