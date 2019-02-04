@@ -147,7 +147,7 @@ function draw() {
       snail[i][j].show(color(255, 255, 255, 100), 0);
     }
   }
-/*     for (var i = 0; i < openSet.length; i++) {
-        openSet[i].show(color(55, 255, 155));
-    } */
+    for (var i = 0; i < openSet.length; i++) {
+        openSet[i].show(color(55, 255, 155, 50), 1);
+    }
 }

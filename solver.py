@@ -5,8 +5,12 @@ import json, codecs
 def parser():
     # read from stdin
     read = sys.stdin.read()
-    size = int(read.split('\n', 1)[0])
-    matrix_str = read[read.index("-----------") + len("-----------"):]
+    try:
+        size = int(read.split('\n', 1)[0])
+        matrix_str = read[read.index("-----------") + len("-----------"):]
+    except ValueError:
+        print("Invalid input.")
+        return
     lines = matrix_str.split('\n')
     cleaned = [line.strip() for line in lines if line != '']
 
