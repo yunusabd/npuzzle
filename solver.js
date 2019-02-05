@@ -3,8 +3,8 @@ const shape = arr.length;
 const openSet = [];
 const closedSet = [];
 let startNode;
-const w = shape * 50;
-const h = shape * 50;
+const w = 640;
+const h = 640;
 
 // Tile constructor function.
 function Tile(i, j) {
@@ -16,6 +16,7 @@ function Tile(i, j) {
   this.n = -1;
   this.endPos = [];
 
+  // method for drawing a tile in the browser
   this.show = function show(col, pos) {
     fill(col);
     rect(w / shape * (this.j), h / shape * (this.i), w / shape, h / shape);
@@ -28,7 +29,7 @@ function Tile(i, j) {
       textSize(16);
       textAlign(CENTER, BOTTOM);
     }
-    // highlight the final position for each tile
+    // highlight the final position for each tile on hover
     if (this.endPos && mouseX >= w / shape * (this.j) && mouseX <= w / shape * (this.j) + w / shape
             && mouseY >= h / shape * (this.i) && mouseY <= h / shape * (this.i) + h / shape) {
       fill(255, 255, 100, 100);
@@ -65,6 +66,7 @@ function getSnail() {
 const snail = getSnail();
 let n = 1;
 
+// Fill the snail with the right numbers.
 function recursiveSnail(start, end) {
   if (end === 0) {
     return;
@@ -123,6 +125,7 @@ function createGrid() {
   }
 }
 
+// Get the tiles surrounding the "0" tile.
 function getSurrounding() {
   surrounding = [];
   zero = findNumber(grid, 0);
@@ -143,6 +146,7 @@ function getSurrounding() {
   return (surrounding);
 }
 
+// TODO Function to move a tile
 function move(arr, from, to) {
   tmp = arr[from[0]][from[1]];
 }
@@ -153,14 +157,51 @@ openSet.push(startNode);
 // startNode.f = heuristics(startNode)
 
 around = getSurrounding();
-console.log(around);
-
-
-function setup() {
-  createCanvas(w, h);
+// calculate Manhattan distance before change
+function mhDistance() {
+  let sum = 0;
+  for (let i = 0; i < shape; i++) {
+    for (let j = 0; j < shape; j++) {
+      if (grid[i][j].n === 0) {
+        continue;
+      }
+      sum += Math.abs(i - grid[i][j].endPos[0]) + Math.abs(j - grid[i][j].endPos[1]);
+      grid[i][j].f = sum;
+    }
+  }
+  return sum;
 }
 
+
+/*
+console.log(around);
+console.log("Manhattan distance: " + mhDistance());
+let newGrid = grid.slice();
+let tmp = newGrid[0][0];
+newGrid[0][0] = newGrid[0][1];
+newGrid[0][1] = tmp;
+console.log(newGrid);
+*/
+
+
+// p5js setup
+function setup() {
+  createCanvas(640, 640);
+}
+
+// p5js draw loop
 function draw() {
+
+  if (openSet.length > 0) {
+    // we can keep going
+    for (let i = 0; i < openSet.length; i++)
+    {
+      
+    }
+  } else {
+    // no solution
+  }
+
   background(0, 0, 0);
   for (let i = 0; i < shape; i++) {
     for (let j = 0; j < shape; j++) {
