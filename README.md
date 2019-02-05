@@ -5,9 +5,9 @@
 
 To run (on MacOS):
 
-1. ```virtualenv npuzzle```
+1. ```virtualenv npuzzle_env```
 
-2. ```source npuzzle/bin/activate```
+2. ```source npuzzle_env/bin/activate```
 
 3. ```pip install -r requirements.txt```
 
