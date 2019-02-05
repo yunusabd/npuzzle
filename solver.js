@@ -3,8 +3,8 @@ const shape = arr.length;
 const openSet = [];
 const closedSet = [];
 let startNode;
-const w = 640;
-const h = 640;
+const w = shape * 50;
+const h = shape * 50;
 
 // Tile constructor function.
 function Tile(i, j) {
@@ -21,13 +21,14 @@ function Tile(i, j) {
     rect(w / shape * (this.j), h / shape * (this.i), w / shape, h / shape);
     fill(255, 255, 255, 100);
     if (pos === 1) {
-      textSize(32);
+      textSize(28);
       textAlign(CENTER, TOP);
     }
     else {
       textSize(16);
       textAlign(CENTER, BOTTOM);
     }
+    // highlight the final position for each tile
     if (this.endPos && mouseX >= w / shape * (this.j) && mouseX <= w / shape * (this.j) + w / shape
             && mouseY >= h / shape * (this.i) && mouseY <= h / shape * (this.i) + h / shape) {
       fill(255, 255, 100, 100);
@@ -52,6 +53,7 @@ function zeroPos(size) {
   return [(size - 1) / 2, (size - 1) / 2];
 }
 
+// The "snail" is the final layout of tiles, as specified in the subject.
 function getSnail() {
   const snail = new Array(shape);
   for (let k = 0; k < shape; k++) {
@@ -96,10 +98,10 @@ function recursiveSnail(start, end) {
 recursiveSnail(0, shape - 1);
 snail[zeroPos(shape)[0]][zeroPos(shape)[1]].n = 0;
 
-function findNumber(number) {
-  for (let i = 0; i < snail.length; i++) {
-    for (let j = 0; j < snail[i].length; j++) {
-      if (snail[i][j].n === number) {
+function findNumber(grid, number) {
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j].n === number) {
         return [i, j];
       }
     }
@@ -112,27 +114,50 @@ function createGrid() {
     for (let j = 0; j < shape; j++) {
       grid[i][j] = new Tile(i, j);
       grid[i][j].n = arr[i][j];
-      grid[i][j].endPos = findNumber(grid[i][j].n);
+      grid[i][j].endPos = findNumber(snail, grid[i][j].n);
       if (arr[i][j] === 0) {
         startNode = grid[i][j];
-        grid[i][j].endPos = findNumber(0);
+        grid[i][j].endPos = findNumber(snail, 0);
       }
     }
   }
 }
 
-createGrid();
+function getSurrounding() {
+  surrounding = [];
+  zero = findNumber(grid, 0);
+  if (zero[0] > 0) {
+    surrounding.push(grid[zero[0] - 1][zero[1]])
+  }
+  if (zero[1] > 0) {
+    surrounding.push(grid[zero[0]][zero[1] - 1])
+  }
+  if (zero[0] < shape - 1)
+  {
+    surrounding.push(grid[zero[0] + 1][zero[1]])
+  }
+  if (zero[1] < shape - 1)
+  {
+    surrounding.push(grid[zero[0]][zero[1] + 1])
+  }
+  return (surrounding);
+}
 
+function move(arr, from, to) {
+  tmp = arr[from[0]][from[1]];
+}
+
+createGrid();
 
 openSet.push(startNode);
 // startNode.f = heuristics(startNode)
 
-console.log('startNode: ' + startNode.n);
+around = getSurrounding();
+console.log(around);
 
-console.log(grid);
 
 function setup() {
-  createCanvas(640, 640);
+  createCanvas(w, h);
 }
 
 function draw() {
