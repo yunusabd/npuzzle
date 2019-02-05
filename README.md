@@ -3,11 +3,12 @@
 # npuzzle
 42 project for solving a sliding block puzzle using the A* algorithm.
 
-To run (on MacOS)
-```virtualenv npuzzle```
+To run (on MacOS):
 
-```source npuzzle/bin/activate```
+1. ```virtualenv npuzzle```
 
-```pip install -r requirements.txt```
+2. ```source npuzzle/bin/activate```
 
-```python3 gen.py -u 3 | python3 solver.py && open -a Google\ Chrome index.html```
+3. ```pip install -r requirements.txt```
+
+4. ```python3 gen.py -u 3 | python3 solver.py && open -a Google\ Chrome index.html```
