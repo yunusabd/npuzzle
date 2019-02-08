@@ -23,7 +23,7 @@ function Grid(size) {
         fill(col);
         const current = this.arr[i][j];
         if (current.n === 0) {
-          fill(0);
+          fill(45, 45, 45);
         }
         rect(w / shape * current.j, h / shape * current.i, h / shape, w / shape);
         fill(0);
@@ -241,7 +241,7 @@ let fr = 30;
 // p5js setup
 function setup() {
   createCanvas(640, 640);
-  frameRate(fr);
+  frameRate(30);
 }
 let current = openSet[0];
 let result = [];
@@ -254,11 +254,10 @@ function draw() {
 
     if (goal(current) === 1) {
       if (result.length === 0) {
-        fr = (10);
         result = reconstruct(current);
         noLoop();
       } else {
-          result[result.length - 1].show(color(100, 100, 255));
+          result[result.length - 1].show(color(0, 255, 119));
           result.pop();
       }
       console.log("finished");
@@ -285,7 +284,7 @@ function draw() {
         }
       }
       console.log("open set: ", openSet.length);
-      current.show(color(255, 255, 0)); 
+      current.show(color(0, 123, 255)); 
     }
   } else {
     console.log("no solution")
