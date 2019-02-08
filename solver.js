@@ -11,25 +11,28 @@ function Grid(size) {
   this.g = 0;
   this.h = 0;
   this.arr = new Array(size);
+  this.parent = null;
   for (let i = 0; i < size; i++) {
     this.arr[i] = new Array(size);
   }
 
-  this.show = function show() {
+  this.show = function show(col) {
     rect(0, 0, w, h);
     for (let i = 0; i < shape; i++) {
       for (let j = 0; j < shape; j++) {
-        fill(255, 255, 0);
+        fill(col);
         const current = this.arr[i][j];
         if (current.n === 0) {
-          fill(255, 255, 155);
+          fill(45, 45, 45);
         }
         rect(w / shape * current.j, h / shape * current.i, h / shape, w / shape);
         fill(0);
         textSize(28);
         textAlign(CENTER, CENTER);
         const offset = w / shape * 0.5;
-        text(current.n, w / shape * current.j + offset, h / shape * current.i + offset);
+        if (current.n != 0) {
+          text(current.n, w / shape * current.j + offset, h / shape * current.i + offset);
+        }
       }  
     }
   }
@@ -156,6 +159,7 @@ function mhDistance(set) {
 function moveTile(currentGrid, pos_from, pos_to) {
   let newGrid = new Grid(shape);
   newGrid.g = currentGrid.g + 1;
+  newGrid.parent = currentGrid;
   for (let i = 0; i < currentGrid.arr.length; i++) {
     newGrid.arr[i] = new Array(shape);
     for (let j = 0; j < currentGrid.arr[i].length; j++) {
@@ -225,49 +229,67 @@ function isEqual(grid1, grid2) {
   return 1;
 }
 
+function reconstruct(current) {
+  let chain = [];
+  while (current) {
+    chain.push(current);
+    current = current.parent;
+  }
+  return chain;
+}
 
 // p5js setup
 function setup() {
   createCanvas(640, 640);
   frameRate(30);
 }
+
 let current = openSet[0];
+let result = [];
 
 // p5js draw loop
 function draw() {
   if (openSet.length > 0) {
     // we can keep going
     mhDistance(openSet);
-    current = lowestF(openSet);
-    console.log("current ", JSON.parse(JSON.stringify(current)));
+
     if (goal(current) === 1) {
-      current.show();
+      if (result.length === 0) {
+        result = reconstruct(current);
+        noLoop();
+      } else {
+          result[result.length - 1].show(color(0, 255, 119));
+          result.pop();
+      }
       console.log("finished");
       return;
-    }
-    const ind = getIndex(current, openSet);
-    if (ind >= 0) {
-      openSet.splice(getIndex, 1);
-    }
-    closedSet.push(current);
-    neighbors = getNeighbors(current);
-    newGrids = [];
-    for (let i = 0; i < neighbors.length; i++) {
-      newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
-    }
-    console.log("newGrids ", JSON.parse(JSON.stringify(newGrids)));
-    for (let i = 0; i < newGrids.length; i++) {
-      if (getIndex(newGrids[i], closedSet) >= 0) {
-        continue ;
+    } else {
+      current = lowestF(openSet);
+      console.log("current ", JSON.parse(JSON.stringify(current)));
+      const ind = getIndex(current, openSet);
+      if (ind >= 0) {
+        openSet.splice(getIndex, 1);
       }
-      if (getIndex(newGrids[i], openSet) < 0) {
-        openSet.push(newGrids[i]);
+      closedSet.push(current);
+      neighbors = getNeighbors(current);
+      newGrids = [];
+      for (let i = 0; i < neighbors.length; i++) {
+        newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
       }
+      for (let i = 0; i < newGrids.length; i++) {
+        if (getIndex(newGrids[i], closedSet) >= 0) {
+          continue ;
+        }
+        if (getIndex(newGrids[i], openSet) < 0) {
+          openSet.push(newGrids[i]);
+        }
+      }
+      console.log("open set: ", openSet.length);
+      current.show(color(0, 123, 255)); 
     }
-    console.log("open set: ", openSet.length);
-    current.show();
   } else {
     console.log("no solution")
+    noLoop();
     return ;
     // no solution*/
   }
