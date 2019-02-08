@@ -2,7 +2,6 @@ const input = Object.values(data);
 const shape = input.length;
 let openSet = [];
 let closedSet = [];
-let startNode;
 const w = 640;
 const h = 640;
 
@@ -10,6 +9,7 @@ const h = 640;
 function Grid(size) {
   this.f = size * size;
   this.g = 0;
+  this.h = 0;
   this.arr = new Array(size);
   for (let i = 0; i < size; i++) {
     this.arr[i] = new Array(size);
@@ -27,7 +27,6 @@ function Grid(size) {
         rect(w / shape * current.j, h / shape * current.i, h / shape, w / shape);
         fill(0);
         textSize(28);
-
         textAlign(CENTER, CENTER);
         const offset = w / shape * 0.5;
         text(current.n, w / shape * current.j + offset, h / shape * current.i + offset);
@@ -42,29 +41,6 @@ function Tile(i, j) {
   this.j = j;
   this.n = -1;
   this.endPos = [];
-
-  // method for drawing a tile in the browser
-  /*this.show = function show(col, pos) {
-    fill(col);
-    rect(w / shape * (this.j), h / shape * (this.i), w / shape, h / shape);
-    fill(255, 255, 255, 100);
-    if (pos === 1) {
-      textSize(28);
-      textAlign(CENTER, TOP);
-    }
-    else {
-      textSize(16);
-      textAlign(CENTER, BOTTOM);
-    }
-    // highlight the final position for each tile on hover
-    if (this.endPos && mouseX >= w / shape * (this.j) && mouseX <= w / shape * (this.j) + w / shape
-            && mouseY >= h / shape * (this.i) && mouseY <= h / shape * (this.i) + h / shape) {
-      fill(255, 255, 100, 100);
-      rect(w / shape * (this.endPos[1]), h / shape * (this.endPos[0]), (w / shape), (h / shape));
-    }
-    text(this.n, w / shape * (this.j + 0.5), h / shape * (this.i + 0.5));
-  };
-  */
 }
 
 // snail is the final grid layout.
@@ -113,7 +89,6 @@ function recursiveSnail(start, end) {
   }
   recursiveSnail(start + 1, end - 1);
 }
-console.log(shape)
 recursiveSnail(0, shape - 1);
 snail.arr[zeroPos(shape)[0]][zeroPos(shape)[1]].n = 0;
 
@@ -135,10 +110,6 @@ function createGrid() {
       initialGrid.arr[i][j] = new Tile(i, j);
       initialGrid.arr[i][j].n = input[i][j];
       initialGrid.arr[i][j].endPos = findNumber(snail, initialGrid.arr[i][j].n);
-      if (input[i][j] === 0) {
-        startNode = initialGrid.arr[i][j];
-        initialGrid.arr[i][j].endPos = findNumber(snail, 0);
-      }
     }
   }
   return initialGrid;
@@ -165,16 +136,8 @@ function getNeighbors(currentGrid) {
   return (surrounding);
 }
 
-// TODO Function to move a tile
-function move(arr, from, to) {
-  tmp = arr[from[0]][from[1]];
-}
-
 initialGrid = createGrid();
-console.log("initialGrid ", JSON.parse(JSON.stringify(initialGrid)));
 openSet.push(initialGrid);
-// startNode.f = heuristics(startNode)
-
 
 // calculate Manhattan distance before change
 function mhDistance(set) {
@@ -182,9 +145,6 @@ function mhDistance(set) {
     let sum = 0;
     for (let i = 0; i < shape; i++) {
       for (let j = 0; j < shape; j++) {
-        if (set[m].arr[i][j].n === 0) {
-          continue;
-        }
         sum += Math.abs(i - set[m].arr[i][j].endPos[0]) + Math.abs(j - set[m].arr[i][j].endPos[1]);
         
       }
@@ -193,29 +153,28 @@ function mhDistance(set) {
   }
 }
 
-/*
-console.log(around);
-console.log("Manhattan distance: " + mhDistance());
-let newGrid = grid.slice();
-let tmp = newGrid[0][0];
-newGrid[0][0] = newGrid[0][1];
-newGrid[0][1] = tmp;
-console.log(newGrid); 
-*/
-
 // duplicate grid, move tile and return new grid
 function moveTile(currentGrid, pos_from, pos_to) {
-  console.log(JSON.parse(JSON.stringify(pos_from)), JSON.parse(JSON.stringify(pos_to)))
   let newGrid = new Grid(shape);
+  newGrid.g = currentGrid.g + 1;
   for (let i = 0; i < currentGrid.arr.length; i++) {
     newGrid.arr[i] = new Array(shape);
     for (let j = 0; j < currentGrid.arr[i].length; j++) {
-      newGrid.arr[i][j] = new Tile(0, 0);
-      newGrid.arr[i][j] = Object.assign(newGrid.arr[i][j], currentGrid.arr[i][j]);
+      newGrid.arr[i][j] = new Tile(i, j);
+      newGrid.arr[i][j].n = currentGrid.arr[i][j].n;
+      newGrid.arr[i][j].endPos = currentGrid.arr[i][j].endPos;
     }
   }
-  newGrid.arr[pos_from[0]][pos_from[1]] = Object.assign(newGrid.arr[pos_from[0]][pos_from[1]], currentGrid.arr[pos_to[0]][pos_to[1]]);
-  newGrid.arr[pos_to[0]][pos_to[1]] = Object.assign(newGrid.arr[pos_to[0]][pos_to[1]], currentGrid.arr[pos_from[0]][pos_from[1]]);
+  let tmp = new Tile(pos_to[0], pos_to[1]);
+  tmp.n = currentGrid.arr[pos_from[0]][pos_from[1]].n;
+  tmp.endPos = currentGrid.arr[pos_from[0]][pos_from[1]].endPos;
+  let tmp2 = new Tile(pos_from[0], pos_from[1]);
+  tmp2.n = currentGrid.arr[pos_to[0]][pos_to[1]].n;
+  tmp2.endPos = currentGrid.arr[pos_to[0]][pos_to[1]].endPos;
+
+  newGrid.arr[pos_from[0]][pos_from[1]] = tmp2;
+  newGrid.arr[pos_to[0]][pos_to[1]] = tmp;
+
   return newGrid;
 }
 
@@ -223,6 +182,7 @@ function moveTile(currentGrid, pos_from, pos_to) {
 function lowestF(set) {
   let lowest = set[0];
   for (let i = 0; i < set.length; i++) {
+    set[i].f = set[i].h + set[i].g;
     if (set[i].f < lowest.f) {
       lowest = set[i];
     }
@@ -230,6 +190,7 @@ function lowestF(set) {
   return lowest;
 }
 
+// Check if the current grid is the goal
 function goal(currentGrid) {
   for (let i = 0; i < shape; i++) {
     for (let j = 0; j < shape; j++) {
@@ -250,9 +211,9 @@ function getIndex(elem, set) {
   return -1;
 }
 
+// Check if two grids are equal
 function isEqual(grid1, grid2) {
   if (grid1.arr.length !== grid2.arr.length) {
-    console.log('this shouldnt happen')
     return 0;
   }
   for (let i = 0; i < grid1.arr.length; i++) {
@@ -269,24 +230,19 @@ function isEqual(grid1, grid2) {
 // p5js setup
 function setup() {
   createCanvas(640, 640);
-  frameRate(1);
+  frameRate(30);
 }
 let current = openSet[0];
-let www = 0;
+
 // p5js draw loop
 function draw() {
-
-  console.log(www++);
-
   if (openSet.length > 0) {
     // we can keep going
     mhDistance(openSet);
     current = lowestF(openSet);
     console.log("current ", JSON.parse(JSON.stringify(current)));
-    current.show();
-
     if (goal(current) === 1) {
-      // found the goal
+      current.show();
       console.log("finished");
       return;
     }
@@ -300,21 +256,24 @@ function draw() {
     for (let i = 0; i < neighbors.length; i++) {
       newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
     }
-    // check if neighbor is in closedSet
+    console.log("newGrids ", JSON.parse(JSON.stringify(newGrids)));
     for (let i = 0; i < newGrids.length; i++) {
       if (getIndex(newGrids[i], closedSet) >= 0) {
-        console.log('in closed set');
         continue ;
       }
       if (getIndex(newGrids[i], openSet) < 0) {
-        console.log("pushed")
         openSet.push(newGrids[i]);
       }
     }
-    console.log("length of open after: ", openSet.length);
+    console.log("open set: ", openSet.length);
+    current.show();
   } else {
     console.log("no solution")
     return ;
     // no solution*/
   }
+}
+
+function mousePressed() {
+  redraw();
 }
