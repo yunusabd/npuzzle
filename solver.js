@@ -21,11 +21,16 @@ function Grid(size) {
       for (let j = 0; j < shape; j++) {
         fill(255, 255, 0);
         const current = this.arr[i][j];
-        rect(w / shape * current.i, h / shape * current.j, h / shape, w / shape);
+        if (current.n === 0) {
+          fill(255, 255, 155);
+        }
+        rect(w / shape * current.j, h / shape * current.i, h / shape, w / shape);
         fill(0);
+        textSize(28);
+
         textAlign(CENTER, CENTER);
-        const offset = w / shape * .5
-        text(current.n, w / shape * current.i + offset, w / shape * current.j + offset)
+        const offset = w / shape * 0.5;
+        text(current.n, w / shape * current.j + offset, h / shape * current.i + offset);
       }  
     }
   }
@@ -35,14 +40,11 @@ function Grid(size) {
 function Tile(i, j) {
   this.i = i;
   this.j = j;
-  this.f = 0;
-  this.g = 0;
-  this.h = 0;
   this.n = -1;
   this.endPos = [];
 
   // method for drawing a tile in the browser
-  this.show = function show(col, pos) {
+  /*this.show = function show(col, pos) {
     fill(col);
     rect(w / shape * (this.j), h / shape * (this.i), w / shape, h / shape);
     fill(255, 255, 255, 100);
@@ -62,6 +64,7 @@ function Tile(i, j) {
     }
     text(this.n, w / shape * (this.j + 0.5), h / shape * (this.i + 0.5));
   };
+  */
 }
 
 // snail is the final grid layout.
@@ -168,8 +171,7 @@ function move(arr, from, to) {
 }
 
 initialGrid = createGrid();
-console.log("initialGrid ", initialGrid);
-
+console.log("initialGrid ", JSON.parse(JSON.stringify(initialGrid)));
 openSet.push(initialGrid);
 // startNode.f = heuristics(startNode)
 
@@ -187,7 +189,7 @@ function mhDistance(set) {
         
       }
     }
-    set[m].f = sum;
+    set[m].h = sum;
   }
 }
 
@@ -198,23 +200,22 @@ let newGrid = grid.slice();
 let tmp = newGrid[0][0];
 newGrid[0][0] = newGrid[0][1];
 newGrid[0][1] = tmp;
-console.log(newGrid);
+console.log(newGrid); 
 */
 
 // duplicate grid, move tile and return new grid
 function moveTile(currentGrid, pos_from, pos_to) {
+  console.log(JSON.parse(JSON.stringify(pos_from)), JSON.parse(JSON.stringify(pos_to)))
   let newGrid = new Grid(shape);
-  for (let i = 0; i < currentGrid.arr.length; i++)
-  {
-    newGrid.arr[i] = currentGrid.arr[i].slice();
+  for (let i = 0; i < currentGrid.arr.length; i++) {
+    newGrid.arr[i] = new Array(shape);
+    for (let j = 0; j < currentGrid.arr[i].length; j++) {
+      newGrid.arr[i][j] = new Tile(0, 0);
+      newGrid.arr[i][j] = Object.assign(newGrid.arr[i][j], currentGrid.arr[i][j]);
+    }
   }
-  newGrid.g = currentGrid.g;
-  let tmp1 = newGrid.arr[pos_from[0]][pos_from[1]].n;
-  let tmp2 = newGrid.arr[pos_from[0]][pos_from[1]].endPos;
-  newGrid.arr[pos_from[0]][pos_from[1]].n = newGrid.arr[pos_to[0]][pos_to[1]].n;
-  newGrid.arr[pos_from[0]][pos_from[1]].endPos = newGrid.arr[pos_to[0]][pos_to[1]].endPos;
-  newGrid.arr[pos_to[0]][pos_to[1]].n = tmp1;
-  newGrid.arr[pos_to[0]][pos_to[1]].endPos = tmp2;
+  newGrid.arr[pos_from[0]][pos_from[1]] = Object.assign(newGrid.arr[pos_from[0]][pos_from[1]], currentGrid.arr[pos_to[0]][pos_to[1]]);
+  newGrid.arr[pos_to[0]][pos_to[1]] = Object.assign(newGrid.arr[pos_to[0]][pos_to[1]], currentGrid.arr[pos_from[0]][pos_from[1]]);
   return newGrid;
 }
 
@@ -232,7 +233,7 @@ function lowestF(set) {
 function goal(currentGrid) {
   for (let i = 0; i < shape; i++) {
     for (let j = 0; j < shape; j++) {
-      if (currentGrid.arr[i][j].n === snail.arr[i][j].n) {
+      if (currentGrid.arr[i][j].n != snail.arr[i][j].n) {
         return 0;
       }
     }
@@ -240,10 +241,9 @@ function goal(currentGrid) {
   return 1;
 }
 
-function isIn(elem, set) {
-  console.log("isIn");
+function getIndex(elem, set) {
   for (let i = 0; i < set.length; i++) {
-    if (isEqual(set[i], elem)) {
+    if (isEqual(set[i], elem) === 1) {
       return i;
     }
   }
@@ -251,12 +251,13 @@ function isIn(elem, set) {
 }
 
 function isEqual(grid1, grid2) {
-  if (grid1.arr.length != grid2.arr.length) {
+  if (grid1.arr.length !== grid2.arr.length) {
+    console.log('this shouldnt happen')
     return 0;
   }
   for (let i = 0; i < grid1.arr.length; i++) {
     for (let j = 0; j < grid1.arr[i].length; j++) {
-      if (grid1.arr[i][j].n != grid2.arr[i][j].n) {
+      if (grid1.arr[i][j].n !== grid2.arr[i][j].n) {
         return 0;
       }
     }
@@ -268,13 +269,12 @@ function isEqual(grid1, grid2) {
 // p5js setup
 function setup() {
   createCanvas(640, 640);
-  frameRate(30);
+  frameRate(1);
 }
 let current = openSet[0];
 let www = 0;
 // p5js draw loop
 function draw() {
-  current.show();
 
   console.log(www++);
 
@@ -283,39 +283,38 @@ function draw() {
     mhDistance(openSet);
     current = lowestF(openSet);
     console.log("current ", JSON.parse(JSON.stringify(current)));
-    console.log("openSet ", JSON.parse(JSON.stringify(current)));
+    current.show();
 
-
-    
     if (goal(current) === 1) {
       // found the goal
       console.log("finished");
       return;
     }
-    getIndex = isIn(current, openSet);
-    openSet.splice(getIndex, 1);
+    const ind = getIndex(current, openSet);
+    if (ind >= 0) {
+      openSet.splice(getIndex, 1);
+    }
     closedSet.push(current);
     neighbors = getNeighbors(current);
     newGrids = [];
     for (let i = 0; i < neighbors.length; i++) {
       newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
     }
-    console.log("length of open: ", openSet.length);
-    console.log("length of neighbors: ", newGrids.length);
     // check if neighbor is in closedSet
     for (let i = 0; i < newGrids.length; i++) {
-      if (isIn(newGrids[i], closedSet) != -1) {
+      if (getIndex(newGrids[i], closedSet) >= 0) {
+        console.log('in closed set');
         continue ;
       }
-      if (isIn(newGrids[i], openSet) === -1) {
+      if (getIndex(newGrids[i], openSet) < 0) {
+        console.log("pushed")
         openSet.push(newGrids[i]);
-      }  
+      }
+    }
     console.log("length of open after: ", openSet.length);
-  }
-    console.log(newGrids);
   } else {
     console.log("no solution")
     return ;
-    // no solution
+    // no solution*/
   }
 }
