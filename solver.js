@@ -57,7 +57,6 @@ function zeroPos(size) {
 }
 
 let n = 1;
-
 // Fill the snail with the right numbers.
 function recursiveSnail(start, end) {
   if (end === 0) {
