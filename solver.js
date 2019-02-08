@@ -237,12 +237,13 @@ function reconstruct(current) {
   }
   return chain;
 }
-let fr = 30;
+
 // p5js setup
 function setup() {
   createCanvas(640, 640);
   frameRate(30);
 }
+
 let current = openSet[0];
 let result = [];
 
@@ -288,6 +289,7 @@ function draw() {
     }
   } else {
     console.log("no solution")
+    noLoop();
     return ;
     // no solution*/
   }
