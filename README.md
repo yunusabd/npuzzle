@@ -13,4 +13,4 @@ To run (on MacOS):
 
 4. ```python3 gen.py -u 3 | python3 solver.py && open -a Google\ Chrome index.html```
 
-5. ```After the solver has finished solving the puzzle, you can click in the browser to play back the moves of the solution.```
+5. After the solver has finished solving the puzzle, you can click in the browser to play back the moves of the solution.
