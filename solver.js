@@ -1,7 +1,7 @@
 const input = Object.values(data);
 const shape = input.length;
-let openSet = [];
-let closedSet = [];
+const openSet = [];
+const closedSet = [];
 const w = 640;
 const h = 640;
 
@@ -53,7 +53,8 @@ const snail = new Grid(shape);
 function zeroPos(size) {
   if (size % 2 === 0) {
     // even number
-    return [size / 2, size / 2];
+    return [(size / 2), size / 2 - 1 ];
+
   }
   // odd number
   return [(size - 1) / 2, (size - 1) / 2];
@@ -106,7 +107,7 @@ function findNumber(currentGrid, number) {
 }
 
 function createGrid() {
-  let initialGrid = new Grid(shape);
+  const initialGrid = new Grid(shape);
   for (let i = 0; i < shape; i++) {
     for (let j = 0; j < shape; j++) {
       initialGrid.arr[i][j] = new Tile(i, j);
@@ -119,26 +120,27 @@ function createGrid() {
 
 // Get the tiles surrounding the "0" tile.
 function getNeighbors(currentGrid) {
-  surrounding = [];
-  zero = findNumber(currentGrid, 0);
+  const surrounding = [];
+  const zero = findNumber(currentGrid, 0);
   if (zero[0] > 0) {
-    surrounding.push(currentGrid.arr[zero[0] - 1][zero[1]])
+    surrounding.push(currentGrid.arr[zero[0] - 1][zero[1]]);
   }
   if (zero[1] > 0) {
-    surrounding.push(currentGrid.arr[zero[0]][zero[1] - 1])
+    surrounding.push(currentGrid.arr[zero[0]][zero[1] - 1]);
   }
   if (zero[0] < shape - 1)
   {
-    surrounding.push(currentGrid.arr[zero[0] + 1][zero[1]])
+    surrounding.push(currentGrid.arr[zero[0] + 1][zero[1]]);
   }
   if (zero[1] < shape - 1)
   {
-    surrounding.push(currentGrid.arr[zero[0]][zero[1] + 1])
+    surrounding.push(currentGrid.arr[zero[0]][zero[1] + 1]);
   }
   return (surrounding);
 }
 
-initialGrid = createGrid();
+const initialGrid = createGrid();
+
 openSet.push(initialGrid);
 
 // calculate Manhattan distance before change
@@ -148,7 +150,6 @@ function mhDistance(set) {
     for (let i = 0; i < shape; i++) {
       for (let j = 0; j < shape; j++) {
         sum += Math.abs(i - set[m].arr[i][j].endPos[0]) + Math.abs(j - set[m].arr[i][j].endPos[1]);
-        
       }
     }
     set[m].h = sum;
@@ -157,7 +158,7 @@ function mhDistance(set) {
 
 // duplicate grid, move tile and return new grid
 function moveTile(currentGrid, pos_from, pos_to) {
-  let newGrid = new Grid(shape);
+  const newGrid = new Grid(shape);
   newGrid.g = currentGrid.g + 1;
   newGrid.parent = currentGrid;
   for (let i = 0; i < currentGrid.arr.length; i++) {
@@ -168,10 +169,10 @@ function moveTile(currentGrid, pos_from, pos_to) {
       newGrid.arr[i][j].endPos = currentGrid.arr[i][j].endPos;
     }
   }
-  let tmp = new Tile(pos_to[0], pos_to[1]);
+  const tmp = new Tile(pos_to[0], pos_to[1]);
   tmp.n = currentGrid.arr[pos_from[0]][pos_from[1]].n;
   tmp.endPos = currentGrid.arr[pos_from[0]][pos_from[1]].endPos;
-  let tmp2 = new Tile(pos_from[0], pos_from[1]);
+  const tmp2 = new Tile(pos_from[0], pos_from[1]);
   tmp2.n = currentGrid.arr[pos_to[0]][pos_to[1]].n;
   tmp2.endPos = currentGrid.arr[pos_to[0]][pos_to[1]].endPos;
 
@@ -197,21 +198,12 @@ function lowestF(set) {
 function goal(currentGrid) {
   for (let i = 0; i < shape; i++) {
     for (let j = 0; j < shape; j++) {
-      if (currentGrid.arr[i][j].n != snail.arr[i][j].n) {
+      if (currentGrid.arr[i][j].n !== snail.arr[i][j].n) {
         return 0;
       }
     }
   }
   return 1;
-}
-
-function getIndex(elem, set) {
-  for (let i = 0; i < set.length; i++) {
-    if (isEqual(set[i], elem) === 1) {
-      return i;
-    }
-  }
-  return -1;
 }
 
 // Check if two grids are equal
@@ -229,8 +221,17 @@ function isEqual(grid1, grid2) {
   return 1;
 }
 
+function getIndex(elem, set) {
+  for (let i = 0; i < set.length; i++) {
+    if (isEqual(set[i], elem) === 1) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 function reconstruct(current) {
-  let chain = [];
+  const chain = [];
   while (current) {
     chain.push(current);
     current = current.parent;
@@ -247,8 +248,13 @@ function setup() {
 let current = openSet[0];
 let result = [];
 
+console.log("current ", JSON.parse(JSON.stringify(initialGrid)));
+console.log("snail ", JSON.parse(JSON.stringify(snail)));
+
 // p5js draw loop
 function draw() {
+  snail.show(color(255,255,0));
+
   if (openSet.length > 0) {
     // we can keep going
     mhDistance(openSet);
@@ -258,40 +264,38 @@ function draw() {
         result = reconstruct(current);
         noLoop();
       } else {
-          result[result.length - 1].show(color(0, 255, 119));
-          result.pop();
+        result[result.length - 1].show(color(0, 255, 119));
+        result.pop();
       }
       console.log("finished");
       return;
-    } else {
-      current = lowestF(openSet);
-      console.log("current ", JSON.parse(JSON.stringify(current)));
-      const ind = getIndex(current, openSet);
-      if (ind >= 0) {
-        openSet.splice(getIndex, 1);
-      }
-      closedSet.push(current);
-      neighbors = getNeighbors(current);
-      newGrids = [];
-      for (let i = 0; i < neighbors.length; i++) {
-        newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
-      }
-      for (let i = 0; i < newGrids.length; i++) {
-        if (getIndex(newGrids[i], closedSet) >= 0) {
-          continue ;
-        }
-        if (getIndex(newGrids[i], openSet) < 0) {
-          openSet.push(newGrids[i]);
-        }
-      }
-      console.log("open set: ", openSet.length);
-      current.show(color(0, 123, 255)); 
     }
+    current = lowestF(openSet);
+    console.log("current ", JSON.parse(JSON.stringify(current)));
+    const ind = getIndex(current, openSet);
+    if (ind >= 0) {
+      openSet.splice(getIndex, 1);
+    }
+    closedSet.push(current);
+    neighbors = getNeighbors(current);
+    newGrids = [];
+    for (let i = 0; i < neighbors.length; i++) {
+      newGrids.push(moveTile(current, [neighbors[i].i, neighbors[i].j], findNumber(current, 0)));
+    }
+    for (let i = 0; i < newGrids.length; i++) {
+      if (getIndex(newGrids[i], closedSet) >= 0) {
+        continue ;
+      }
+      if (getIndex(newGrids[i], openSet) < 0) {
+        openSet.push(newGrids[i]);
+      }
+    }
+    console.log("open set: ", openSet.length);
+    current.show(color(0, 123, 255)); 
   } else {
     console.log("no solution")
     noLoop();
     return ;
-    // no solution*/
   }
 }
 
