@@ -253,8 +253,6 @@ console.log("snail ", JSON.parse(JSON.stringify(snail)));
 
 // p5js draw loop
 function draw() {
-  snail.show(color(255,255,0));
-
   if (openSet.length > 0) {
     // we can keep going
     mhDistance(openSet);
@@ -262,6 +260,7 @@ function draw() {
     if (goal(current) === 1) {
       if (result.length === 0) {
         result = reconstruct(current);
+        console.log(result.length, " steps for solving the puzzle.");
         noLoop();
       } else {
         result[result.length - 1].show(color(0, 255, 119));
