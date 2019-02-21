@@ -1,7 +1,8 @@
-from parser import parse_stdin
+from parsing.parser import parse_stdin
 from solver import solve
 import argparse
 import logging
+import util
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -10,8 +11,8 @@ def parse_args():
                         "--loglevel",
                         type=str,
                         default="WARNING",
-                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                        help="Setup the log level. can be one of DEBUG, INFO, WARNING, ERROR, CRITICAL")
+                        choices=["NONE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                        help="Setup the log level. can be one of DEBUG, INFO, WARNING, ERROR, CRITICAL or NONE")
 
     args = parser.parse_args()
     return args
@@ -20,11 +21,17 @@ def parse_args():
 def main():
     args = parse_args()
 
-    logging.basicConfig(level=args.loglevel)
+    if (args.loglevel != "NONE"):
+        logging.basicConfig(level=args.loglevel)
 
-    initial_puzzle = parse_stdin()
-    
-    solve(initial_puzzle)
+    # initial_puzzle = parse_stdin()
+    # print(initial_puzzle)
+
+    puzzle = util.generate_puzzle_solution(0)
+
+    for item in puzzle:
+        print(item)
+    # solve(initial_puzzle)
 
 
 if __name__ == "__main__":
