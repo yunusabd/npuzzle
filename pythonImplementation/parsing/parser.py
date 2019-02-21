@@ -1,7 +1,9 @@
 import sys
 import re
 import logging
-from data_model import PuzzleState
+from data_model import PuzzleState, ParsingError
+from util import flatten_nested_list
+from parsing.integrity import check_puzzle_integrity
 
 def get_next_line():
     "yield each line  content of input on stdin."
@@ -42,7 +44,7 @@ def get_puzzle_row(puzzle_size, line):
 def parse_input():
     logging.debug("Parsing Input")
     # default value before parsing actual value.
-    puzzle = PuzzleState(0,0,0,0,[])
+    puzzle = PuzzleState(0,0,0,0,[],0)
     rows = []
     for line in get_next_line():
         if line_is_comment(line):
@@ -56,15 +58,10 @@ def parse_input():
     return puzzle
 
 
-def check_puzzle_integrity(puzzle):
-    logging.debug("Checking puzzle validity.")
-    return True
 
 def parse_stdin():
     puzzle = parse_input()
-    if check_puzzle_integrity(puzzle):
-        return puzzle
-    print("puzzle is not correct. Each numbers must be unique & in order.")
-    exit(-1)
+    check_puzzle_integrity(puzzle)
+    return puzzle
 
 
