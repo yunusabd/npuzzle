@@ -12,8 +12,8 @@ def get_next_line():
 
 def line_is_comment(line):
     trimmed_line = line.lstrip()
-    if trimmed_line.startswith("#"):
-        print("Comment")
+    if trimmed_line.startswith("#") or trimmed_line.startswith("-"):
+        logging.debug("Comment")
         return True
     return False
 
@@ -27,7 +27,7 @@ def line_is_puzzle_content(line, puzzle_size):
     trimmed_line = line.strip()
     if re.match(f"(\d+\s+){ {puzzle_size-1} }(\d+\s*)(#.*)?$", trimmed_line):
         return True
-    print(f"line should contain {puzzle_size} numbers")
+    logging.warning(f"line should contain {puzzle_size} numbers")
     return False
 
 def get_puzzle_size(line):
