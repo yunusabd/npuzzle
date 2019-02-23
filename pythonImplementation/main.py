@@ -24,14 +24,10 @@ def main():
     if (args.loglevel != "NONE"):
         logging.basicConfig(level=args.loglevel)
 
-    # initial_puzzle = parse_stdin()
-    # print(initial_puzzle)
+    initial_puzzle = parse_stdin()
+    print(initial_puzzle)
 
-    puzzle = util.generate_puzzle_solution(0)
-
-    for item in puzzle:
-        print(item)
-    # solve(initial_puzzle)
+    solve(initial_puzzle)
 
 
 if __name__ == "__main__":
