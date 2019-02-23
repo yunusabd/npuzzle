@@ -41,12 +41,15 @@ def generate_snail_positions(array_size):
 
 def generate_puzzle_solution(size):
     puzzle = [[0 for _ in range(size)] for _ in range(size)]
+    solution = data_model.PuzzleSolution(puzzle, {})
 
-
-    for ((x,y), num) in zip(generate_snail_positions(size), range(1, size * size)):
-        puzzle[y][x] = num
-
-    return puzzle
+    for ((x,y), num) in zip(generate_snail_positions(size), range(1, size * size + 1)):
+        # last turn number must be zero (empty tile)
+        if (num == size * size):
+            num = 0
+        solution.state[y][x] = num
+        solution.positions[num] = (y, x)
+    return solution
 
 def get_empty_position(puzzle):
     for x in range(len(puzzle)):
