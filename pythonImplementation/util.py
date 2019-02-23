@@ -1,4 +1,6 @@
-# from data_model import PuzzleState
+import data_model
+import logging
+import copy
 
 def flatten_nested_list(nested_list):
     return [item for elem in nested_list for item in elem]
@@ -55,22 +57,24 @@ def get_empty_position(puzzle):
 def get_allowed_permutations(puzzle):
     (y, x) = get_empty_position(puzzle)
     if (y > 0):
-        yield (y-1, x)
+        yield ((y,x),(y-1, x))
     if (y < len(puzzle)-1):
-        yield(y+1, x)
+        yield ((y,x),(y+1, x))
     if (x > 0):
-        yield (y, x-1)
+        yield ((y,x),(y, x-1))
     if (x < len(puzzle)-1):
-        yield(y, x+1)
+        yield ((y,x),(y, x+1))
 
 def permute_puzzle(puzzle, empty_tile_pos, swap_tile_pos):
-    new = puzzle
-    new[empty_tile_pos[0]][empty_tile_pos[1]
-                           ] = new[swap_tile_pos[0]][swap_tile_pos[1]]
-    new[swap_tile_pos[0]][swap_tile_pos[1]] = 0
-    return PuzzleState(0,0,0,0,0,new,0)
+    puzzle_copy = copy.deepcopy(puzzle)
+    new = data_model.PuzzleState(0,0,0,0,puzzle_copy,0)
+    new.currentState[empty_tile_pos[0]][empty_tile_pos[1]] = new.currentState[swap_tile_pos[0]][swap_tile_pos[1]]
+    new.currentState[swap_tile_pos[0]][swap_tile_pos[1]] = 0
+    return new
 
 def generate_permutations(puzzle):
-    for (empty_tile_pos, swap_tile_pos) in get_allowed_permutations(puzzle):
-        new_puzzle = permute_puzzle(puzzle, empty_tile_pos, swap_tile_pos)
+    for (empty_tile_pos, swap_tile_pos) in get_allowed_permutations(puzzle.currentState):
+        logging.debug(f"empty position : {empty_tile_pos}")
+        logging.debug(f"tile to switch position : {swap_tile_pos}")
+        new_puzzle = permute_puzzle(puzzle.currentState, empty_tile_pos, swap_tile_pos)
         yield new_puzzle
