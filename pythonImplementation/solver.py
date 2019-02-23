@@ -3,17 +3,21 @@ import random
 from data_model import PuzzleState
 import util
 
+def manhattan(current_state, solution):
+    return 1
+
+
 def solve(initial_puzzle):
     
-    states_to_check = []
-    states_checked = {}
+    open_list = []
+    closed_list = {}
     success = 0
     final_state = util.generate_puzzle_solution(initial_puzzle.size)
 
-    heapq.heappush(states_to_check, initial_puzzle)
-    while (len(states_to_check) != 0 and not success):
+    heapq.heappush(open_list, initial_puzzle)
+    while (len(open_list) != 0 and not success):
         # Pop most valuable state.
-        current_state = heapq.heappop(states_to_check)
+        current_state = heapq.heappop(open_list)
         
 
         # check if final state
@@ -21,17 +25,19 @@ def solve(initial_puzzle):
             success = True
         else:
             # add to closed list.
-            states_checked[current_state] = current_state.overall_cost
+            closed_list[current_state] = current_state.overall_cost
 
             # expand to next combinations.
             for new_state in current_state.expand():
 
+                # compute new node heuristic cost.
+                new_state.compute_cost(manhattan)
+
                 # ignore state already in open/closed list.
-                if (new_state in states_to_check or new_state in states_checked):
+                if (new_state in closed_list):
                     continue
 
-                new_state.previous_state = current_state
-                heapq.heappush(states_to_check, new_state)
+                heapq.heappush(open_list, new_state)
 
     if (success):
-        print(current_state)
+        current_state.display_path()
