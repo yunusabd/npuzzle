@@ -7,6 +7,9 @@ import util
 class Astar:
     def __init__(self, initial_puzzle):
         self.initial_puzzle = initial_puzzle
+        self.open_list = []
+        self.closed_list = {}
+        self.solution = util.generate_puzzle_solution(self.initial_puzzle.size)
 
     def queue_push(self, value):
         heapq.heappush(self.open_list, value)
@@ -15,10 +18,6 @@ class Astar:
         return heapq.heappop(self.open_list)
 
     def solve(self):
-        
-        self.open_list = []
-        self.closed_list = {}
-        self.solution = util.generate_puzzle_solution(self.initial_puzzle.size)
         success = 0
 
         self.queue_push(self.initial_puzzle)
@@ -26,7 +25,6 @@ class Astar:
             # Pop most valuable state.
             current_state = self.queue_pop()
             
-
             # check if final state
             if (current_state.is_final_state(self.solution.state)):
                 success = True
