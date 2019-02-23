@@ -1,8 +1,9 @@
 from parsing.parser import parse_stdin
-from solver import solve
+from solver import Astar
 import argparse
 import logging
 import util
+import cProfile
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -27,8 +28,11 @@ def main():
     initial_puzzle = parse_stdin()
     print(initial_puzzle)
 
-    solve(initial_puzzle)
+    solver = Astar(initial_puzzle)
+    solver.solve()
 
 
 if __name__ == "__main__":
+    # if we want some profiling
+    # cProfile.run('main()')
     main()
