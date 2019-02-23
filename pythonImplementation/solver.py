@@ -3,8 +3,19 @@ import random
 from data_model import PuzzleState
 import util
 
-def manhattan(current_state, solution):
-    return 1
+def manhattan(puzzle, solution):
+    cost = 0
+    for y in range(puzzle.size):
+        for x in range(puzzle.size):
+            digit = puzzle.currentState[y][x]
+            (expected_x, expected_y) = solution.positions[digit]
+
+            x_distance = abs(x - expected_x)
+            y_distance = abs(y - expected_y)
+
+            cost += (x_distance + y_distance)
+
+    return cost
 
 
 def solve(initial_puzzle):
@@ -12,7 +23,8 @@ def solve(initial_puzzle):
     open_list = []
     closed_list = {}
     success = 0
-    final_state = util.generate_puzzle_solution(initial_puzzle.size)
+    solution = util.generate_puzzle_solution(initial_puzzle.size)
+    print(solution.positions)
 
     heapq.heappush(open_list, initial_puzzle)
     while (len(open_list) != 0 and not success):
@@ -21,7 +33,7 @@ def solve(initial_puzzle):
         
 
         # check if final state
-        if (current_state.is_final_state(final_state)):
+        if (current_state.is_final_state(solution.state)):
             success = True
         else:
             # add to closed list.
@@ -31,7 +43,7 @@ def solve(initial_puzzle):
             for new_state in current_state.expand():
 
                 # compute new node heuristic cost.
-                new_state.compute_cost(manhattan)
+                new_state.compute_cost(solution, manhattan)
 
                 # ignore state already in open/closed list.
                 if (new_state in closed_list):
