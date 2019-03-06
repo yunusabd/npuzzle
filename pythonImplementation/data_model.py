@@ -60,7 +60,7 @@ class PuzzleState:
     def display_analytics(self, stats):
         print("\t\t STATS :\n")
         print(f"Total node selected in open list : {stats.expanded_node_number}")
-        print(f"Maximum amount of nodes in open list : {stats.total_node_number}\n")
+        print(f"Maximum amount of nodes in open list at same time: {stats.total_node_number}\n")
 
 
 @dataclass
