@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Any, Dict
-from util import generate_permutations
+from util import generate_permutations, flatten_nested_list
 
 @dataclass(order=True)
 class PuzzleState:
@@ -10,9 +10,11 @@ class PuzzleState:
     size: int
     currentState: List[List[int]]
     previous_state: Any
-
-    def __hash__(self):
-        return hash(str(self.currentState))
+    
+    def hash(self):
+        to_str = [str(x) for x in flatten_nested_list(self.currentState)]
+        joined = "".join(to_str)
+        return (int(joined))
 
     def is_final_state(self, solution):
         return self.currentState == solution

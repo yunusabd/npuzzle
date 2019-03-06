@@ -30,7 +30,7 @@ class Astar:
                 success = True
             else:
                 # add to closed list.
-                self.closed_list[current_state] = current_state.overall_cost
+                self.closed_list[current_state.hash()] = current_state.overall_cost
 
                 # expand to next combinations.
                 for new_state in current_state.expand():
@@ -39,7 +39,7 @@ class Astar:
                     new_state.compute_cost(self.solution, manhattan_heuristic)
 
                     # ignore state already in open/closed list.
-                    if (new_state in self.closed_list):
+                    if (new_state.hash() in self.closed_list):
                         continue
 
                     self.queue_push(new_state)
