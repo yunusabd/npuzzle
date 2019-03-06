@@ -13,8 +13,8 @@ class Astar:
         self.solution = util.generate_puzzle_solution(self.initial_puzzle.size)
         # keep some stats :
         self.expanded_node_number = 0
-        self.current_node_number = 1
-        self.total_node_number = 1
+        self.current_node_number = 0
+        self.total_node_number = 0
 
     def solve(self):
         success = 0
