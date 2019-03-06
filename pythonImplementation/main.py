@@ -12,14 +12,14 @@ def parse_args():
     parser.add_argument("-l",
                         "--loglevel",
                         type=str,
-                        default="NONE",
+                        default="ERROR",
                         choices=["NONE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                         help="Setup the log level.")
 
     parser.add_argument("-H",
                         "--heuristic",
                         type=str,
-                        default="manhattan",
+                        default="hamming",
                         choices=["manhattan", "hamming", "..."],
                         help="Choose an heuristic to solve puzzle.")
 
