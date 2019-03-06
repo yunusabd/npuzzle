@@ -44,6 +44,16 @@ class PuzzleState:
         if (self.previous_state):
             self.previous_state.display_path()
         self.display()
+    
+    def display_move_number(self):
+        print("\n\t\t SOLUTION :\n")
+        print(f"Number of moves to solve the puzzle : {self.moveNumber}\n")
+    
+    def display_analytics(self, stats):
+        print("\t\t STATS :\n")
+        print(f"Total node selected in open list : {stats.expanded_node_number}")
+        print(f"Maximum amount of nodes in open list : {stats.total_node_number}\n")
+
 
 @dataclass
 class PuzzleSolution:
