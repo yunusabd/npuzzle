@@ -39,7 +39,7 @@ class Astar:
                         continue
 
                     # compute cost & push in open list
-                    new_state.compute_cost(self.solution, hamming_heuristic)
+                    new_state.compute_cost(self.solution, self.heuristic)
                     self.queue_push(new_state)
 
         if (success):
@@ -69,3 +69,9 @@ class Astar:
         "Called whenever an object is popped from open list."
         self.expanded_node_number += 1
         self.current_node_number -= 1
+
+    def set_heuristic(self, choice):
+        if (choice == "manhattan"):
+            self.heuristic = manhattan_heuristic
+        elif (choice == "hamming"):
+            self.heuristic = hamming_heuristic

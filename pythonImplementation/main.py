@@ -12,9 +12,16 @@ def parse_args():
     parser.add_argument("-l",
                         "--loglevel",
                         type=str,
-                        default="WARNING",
+                        default="NONE",
                         choices=["NONE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                        help="Setup the log level. can be one of DEBUG, INFO, WARNING, ERROR, CRITICAL or NONE")
+                        help="Setup the log level.")
+
+    parser.add_argument("-H",
+                        "--heuristic",
+                        type=str,
+                        default="manhattan",
+                        choices=["manhattan", "hamming", "..."],
+                        help="Choose an heuristic to solve puzzle.")
 
     args = parser.parse_args()
     return args
@@ -31,6 +38,7 @@ def main():
 
 
     solver = Astar(initial_puzzle)
+    solver.set_heuristic(args.heuristic)
     if (solver.is_solvable()):
         solver.solve()
     else:
