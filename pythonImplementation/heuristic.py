@@ -18,6 +18,8 @@ def hamming_heuristic(puzzle, solution):
     cost = 0
     for y in range(puzzle.size):
         for x in range(puzzle.size):
+            if (puzzle.currentState[y][x] == 0):
+                continue
             digit = puzzle.currentState[y][x]
             if (digit != solution.state[y][x]):
                 cost += 1
