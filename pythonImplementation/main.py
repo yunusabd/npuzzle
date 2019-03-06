@@ -1,5 +1,6 @@
 from parsing.parser import parse_stdin
 from solver import Astar
+from solvable import compute_inversions
 import argparse
 import logging
 import util
@@ -26,10 +27,14 @@ def main():
         logging.basicConfig(level=args.loglevel)
 
     initial_puzzle = parse_stdin()
-    print(initial_puzzle)
+    # print(initial_puzzle)
+
 
     solver = Astar(initial_puzzle)
-    solver.solve()
+    if (solver.is_solvable()):
+        solver.solve()
+    else:
+        print("This puzzle is not solvable !")
 
 
 if __name__ == "__main__":
