@@ -33,11 +33,19 @@ class PuzzleState:
         self.heuristicCost = heuristic(self, solution)
         self.overall_cost = self.heuristicCost + self.moveNumber
 
+    def display_solution(self, stats):
+        self.display_move_number()
+        self.display_path()
+        self.display_analytics(stats)
 
     def display(self):
         "display current state of puzzle on screen"
+        width = self.size//2
         for elem in self.currentState:
-            print(elem)
+            print("[", end="")
+            for item in elem[:-1]:
+                print(f"{item:{width}}, ", end="")
+            print(f"{elem[-1]:{width}}]")
         print("")
 
     def display_path(self):

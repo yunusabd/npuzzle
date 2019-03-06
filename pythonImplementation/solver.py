@@ -43,9 +43,7 @@ class Astar:
                     self.queue_push(new_state)
 
         if (success):
-            current_state.display_path()
-            current_state.display_move_number()
-            current_state.display_analytics(self)
+            current_state.display_solution(self)
 
     def is_solvable(self):
         return is_solvable(self.initial_puzzle, self.solution)
