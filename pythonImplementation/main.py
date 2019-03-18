@@ -1,10 +1,23 @@
 from parsing.parser import parse_stdin
 from solver import Astar
-from solvable import compute_inversions
 import argparse
 import logging
-import util
 import cProfile
+
+def main():
+    args = parse_args()
+
+    if (args.loglevel != "NONE"):
+        logging.basicConfig(level=args.loglevel)
+
+    initial_puzzle = parse_stdin()
+
+    solver = Astar(initial_puzzle)
+    solver.set_heuristic(args.heuristic)
+    if (solver.is_solvable()):
+        solver.solve()
+    else:
+        print("This puzzle is not solvable !")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -20,29 +33,11 @@ def parse_args():
                         "--heuristic",
                         type=str,
                         default="hamming",
-                        choices=["manhattan", "hamming", "..."],
+                        choices=["manhattan", "hamming", "linear_conflict"],
                         help="Choose an heuristic to solve puzzle.")
 
     args = parser.parse_args()
     return args
-
-
-def main():
-    args = parse_args()
-
-    if (args.loglevel != "NONE"):
-        logging.basicConfig(level=args.loglevel)
-
-    initial_puzzle = parse_stdin()
-    # print(initial_puzzle)
-
-
-    solver = Astar(initial_puzzle)
-    solver.set_heuristic(args.heuristic)
-    if (solver.is_solvable()):
-        solver.solve()
-    else:
-        print("This puzzle is not solvable !")
 
 
 if __name__ == "__main__":

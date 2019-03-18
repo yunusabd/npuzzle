@@ -73,3 +73,5 @@ class Astar:
             self.heuristic = manhattan_heuristic
         elif (choice == "hamming"):
             self.heuristic = hamming_heuristic
+        elif (choice == "linear_conflict"):
+            self.heuristic = linear_conflict

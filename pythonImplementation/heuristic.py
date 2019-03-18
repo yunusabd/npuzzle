@@ -24,3 +24,6 @@ def hamming_heuristic(puzzle, solution):
             if (digit != solution.state[y][x]):
                 cost += 1
     return cost
+
+def linear_conflict(puzzle, solution):
+        return 0
