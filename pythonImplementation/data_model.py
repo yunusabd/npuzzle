@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Any, Dict
-from util import generate_permutations, flatten_nested_list
+from util import generate_permutations, flatten_nested_list, colors
 
 
 @dataclass
@@ -80,8 +80,15 @@ class PuzzleState:
         for elem in self.currentState:
             print("[", end="")
             for item in elem[:-1]:
-                print(f"{item:{width}}, ", end="")
+                if (item == 0):
+                    print(colors.OKGREEN, end="")
+                    print(f"{item:{width}}", end="")
+                    print(f"{colors.ENDC}, ", end="")
+                else:
+                    print(f"{item:{width}}, ", end="")
             print(f"{elem[-1]:{width}}]")
         print("")
+
+
 
     
