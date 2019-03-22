@@ -41,10 +41,18 @@ class PuzzleState:
             child.size = self.size
             yield child
 
-    def compute_cost(self, solution, heuristic):
+    def compute_cost(self, solution, heuristic, search_type):
         "Take a heuristic function as param to compute cost."
-        self.heuristicCost = heuristic(self, solution)
-        self.overall_cost = self.heuristicCost + self.moveNumber
+        # Greedy only uses heuristic
+        if (search_type == "greedy"):
+            self.heuristicCost = heuristic(self, solution)
+            self.overall_cost = self.heuristicCost
+        # uniform cost is Breadth First Search algo.
+        elif (search_type == "uniform"):
+            self.overall_cost = self.moveNumber
+        else:
+            self.heuristicCost = heuristic(self, solution)
+            self.overall_cost = self.heuristicCost + self.moveNumber
 
     def display_solution(self, stats):
         self.display_move_number()

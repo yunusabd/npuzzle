@@ -39,7 +39,7 @@ class Astar:
                         continue
 
                     # compute cost & push in open list
-                    new_state.compute_cost(self.solution, self.heuristic)
+                    new_state.compute_cost(self.solution, self.heuristic, self.search_type)
                     self.queue_push(new_state)
 
         if (success):
@@ -75,3 +75,6 @@ class Astar:
             self.heuristic = hamming_heuristic
         elif (choice == "linear_conflict"):
             self.heuristic = linear_conflict
+    
+    def set_search_type(self, search_type):
+        self.search_type = search_type
