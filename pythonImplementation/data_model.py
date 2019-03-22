@@ -86,7 +86,15 @@ class PuzzleState:
                     print(f"{colors.ENDC}, ", end="")
                 else:
                     print(f"{item:{width}}, ", end="")
-            print(f"{elem[-1]:{width}}]")
+            
+            # print(f"{elem[-1]:{width}}]", end="\n\n")
+
+            if (elem[-1] == 0):
+                print(colors.OKGREEN, end="")
+                print(f"{elem[-1]:{width}}", end="")
+                print(f"{colors.ENDC}]")
+            else:
+                print(f"{elem[-1]:{width}}]")
         print("")
 
 
